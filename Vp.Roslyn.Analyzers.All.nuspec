@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Vp.Roslyn.Analyzers.All</id>
+    <version>1.0.0</version>
+	<title>Collection of useful C# analyzers</title>
+    <authors>Vladislav Plemyannik</authors>
+    <owners>Vladislav Plemyannik</owners>
+    <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
+    <projectUrl>https://github.com/davilko/Vp.Roslyn.Analyzers.All</projectUrl>
+    <iconUrl>https://pbs.twimg.com/profile_images/686976511593693184/pAsKfi7B_400x400.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Package description</description>
+    <releaseNotes>Summary of</releaseNotes>
+    <copyright>Copyright 2018</copyright>
+    <tags>Roslyn Analyzers</tags>
+  </metadata>
+</package>
