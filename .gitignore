@@ -51,6 +51,7 @@ x64/
 .idea
 *.idea
 build/
+nuget/
 
 # ReSharper is a .NET coding add-in
 _ReSharper*

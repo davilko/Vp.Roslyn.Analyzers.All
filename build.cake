@@ -1,23 +1,20 @@
-//////////////////////////////////////////////////////////////////////
-// ARGUMENTS
-//////////////////////////////////////////////////////////////////////
+
 
 var target = Argument("target", "Default");
 var configuration = Argument("configuration", "Release");
 
-//////////////////////////////////////////////////////////////////////
-// PREPARATION
-//////////////////////////////////////////////////////////////////////
 
 // Define directories.
 var solutions = GetFiles("./**/*.sln");
 var solutionPaths = solutions.Select(solution => solution.GetDirectory());
+
+
 //////////////////////////////////////////////////////////////////////
-// TASKS
+// CLEANNING
 //////////////////////////////////////////////////////////////////////
 
 Task("Clean")
-    .Does(() =>
+  .Does(() =>
 {
     // Clean solution directories.
     foreach(var path in solutionPaths)
@@ -25,7 +22,7 @@ Task("Clean")
         Information("Cleaning {0}", path);
         CleanDirectories(path + "/**/bin/" + configuration);
         CleanDirectories(path + "/**/obj/" + configuration);
-    }
+  }
 });
 
 Task("Restore-NuGet-Packages")
@@ -39,6 +36,10 @@ Task("Restore-NuGet-Packages")
         NuGetRestore(solution);
     }
 });
+
+//////////////////////////////////////////////////////////////////////
+// BUILD
+//////////////////////////////////////////////////////////////////////
 
 Task("Build")
     .ContinueOnError()
@@ -61,6 +62,10 @@ Task("Build")
     }
 });
 
+//////////////////////////////////////////////////////////////////////
+// TEST RUNNER
+//////////////////////////////////////////////////////////////////////
+
 Task("Run-Unit-Tests")
     .IsDependentOn("Build")
     .Does(() =>
@@ -73,52 +78,56 @@ Task("Run-Unit-Tests")
 });
 
 //////////////////////////////////////////////////////////////////////
-// PACK NUPKG
+// DLL COPYING
 //////////////////////////////////////////////////////////////////////
 
-Task("Pack-Nupkg")
+Task("Dll-Сopying")
     .IsDependentOn("Run-Unit-Tests")
     .Does(() => 
 {
-    if(DirectoryExists("./build"))
+    if(DirectoryExists("./nuget"))
     {
-        CleanDirectories("./build");
+        CleanDirectories("./nuget");
     }
     else
     {
-        CreateDirectory("./build");
+        CreateDirectory("./nuget");
     }
 
-    CreateDirectory("./build/tools");
-    CreateDirectory("./build/analyzers/dotnet/cs");
-    CopyFile("./Vp.Roslyn.Analyzers.All.nuspec", "./build/Vp.Roslyn.Analyzers.All.nuspec");
+    CreateDirectory("./nuget/tools");
+    CreateDirectory("./nuget/analyzers/dotnet/cs");
+    CopyFile("./Vp.Roslyn.Analyzers.All.nuspec", "./nuget/Vp.Roslyn.Analyzers.All.nuspec");
 
     foreach(var path in solutionPaths)
     {
         Information("Search DLL {0}", path);
-        var files = GetFiles(path + "/**/bin/" + configuration + "/netstandard1.3/*.dll");
-        if(!files.Any()) Information("Files not found");
+        var files = GetFiles(path + "/**/bin/" + configuration + "/**/*Analyzer.dll");
+        if(!files.Any()) Warning("Files not found");
         foreach(var file in files) 
         {
-            Information("Coping DLL {0}", file);
+            Information("Сopying DLL {0}", file);
         }
-        CopyFiles(files, "./build/analyzers/dotnet/cs");
+        CopyFiles(files, "./nuget/analyzers/dotnet/cs");
 
-        var scripts = GetFiles(path + "/**/bin/" + configuration + "/netstandard1.3/tools/*.ps1");
-        CopyFiles(scripts, "./build/tools");
+        var scripts = GetFiles(path + "/**/bin/" + configuration + "/**/tools/*.ps1");
+        CopyFiles(scripts, "./nuget/tools");
     }
+});
 
-    var nuGetPackSettings = new NuGetPackSettings
-	{
-		IncludeReferencedProjects = false,
-		Properties = new Dictionary<string, string>
-		{
-			{ "Configuration", "Release" }
-		}
-	};
+//////////////////////////////////////////////////////////////////////
+// PACK NUGET
+//////////////////////////////////////////////////////////////////////
 
-    NuGetPack("./build/Vp.Roslyn.Analyzers.All.nuspec", nuGetPackSettings);
+Task("Pack-Nuget")
+    .IsDependentOn("Dll-Сopying")
+    .Does(() =>
+{
+    var nugetSettings = new NuGetPackSettings
+    {
+      OutputDirectory = "./nuget"
+    };
 
+    NuGetPack("./nuget/Vp.Roslyn.Analyzers.All.nuspec", nugetSettings);
 });
 
 //////////////////////////////////////////////////////////////////////
@@ -126,7 +135,7 @@ Task("Pack-Nupkg")
 //////////////////////////////////////////////////////////////////////
 
 Task("Default")
-    .IsDependentOn("Pack-Nupkg");
+    .IsDependentOn("Pack-Nuget");
 
 //////////////////////////////////////////////////////////////////////
 // EXECUTION
