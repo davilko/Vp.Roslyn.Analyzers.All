@@ -1,7 +1,21 @@
-# Cake example repository
+# ("Roslyn") Analyzers
+===========================================
 
-This repository is used as an minimal example of using the [Cake build system](https://cakebuild.net)
+Projects
+========
 
-You can read more in the Cake [Getting Started guide](https://cakebuild.net/docs/tutorials/getting-started).
+Vp.ConfigureAwait.Analyzer
+--------------------------------
 
-[![Build Status](https://ci.appveyor.com/api/projects/status/dfi1xib48d9diiac?svg=true)](https://ci.appveyor.com/project/cakebuild/example)
+Vp.DateTimeNow.Analyzer
+--------------------------------
+
+Build via [C# Cake](https://github.com/cake-build/cake) 
+========
+
+Getting Started
+===============
+
+1. Clone the repository
+2. Restore, Build, Run Tests: `build.ps1`
+
