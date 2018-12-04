@@ -10,8 +10,8 @@
     <projectUrl>https://github.com/davilko/Vp.Roslyn.Analyzers.All</projectUrl>
     <iconUrl>https://pbs.twimg.com/profile_images/686976511593693184/pAsKfi7B_400x400.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>Package description</description>
-    <releaseNotes>Summary of</releaseNotes>
+    <description>Collection of useful C# analyzers</description>
+    <releaseNotes>Created two initial alalyzers that check invocation: ConfigureAwait(false) and DateTime.UtcNow</releaseNotes>
     <copyright>Copyright 2018</copyright>
     <tags>Roslyn Analyzers</tags>
   </metadata>

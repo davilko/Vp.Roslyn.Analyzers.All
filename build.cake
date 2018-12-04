@@ -2,6 +2,7 @@
 
 var target = Argument("target", "Default");
 var configuration = Argument("configuration", "Release");
+var publish = Argument("publish", false);
 
 
 // Define directories.
@@ -46,6 +47,7 @@ Task("Build")
     .IsDependentOn("Restore-NuGet-Packages")
     .Does(() =>
 {
+    Information("Build with nuget publish - {0}", publish);
     // Build all solutions.
     Information("Solution Count {0}", solutions.Count());
     foreach(var solution in solutions)
@@ -130,12 +132,25 @@ Task("Pack-Nuget")
     NuGetPack("./nuget/Vp.Roslyn.Analyzers.All.nuspec", nugetSettings);
 });
 
+Task("Publish-Nuget")
+    .WithCriteria(publish)
+    .Does(() =>
+{
+    var nugetSettings = new NuGetPushSettings {
+     Source = "https://api.nuget.org/v3/index.json",
+     ApiKey = "oy2azj55d2b7zku3rdjqzrgdks2wowju5jco7mf4ke335u"
+    };
+
+    NuGetPush("./nuget/Vp.Roslyn.Analyzers.All.nuspec", nugetSettings);
+});
+
 //////////////////////////////////////////////////////////////////////
 // TASK TARGETS
 //////////////////////////////////////////////////////////////////////
 
 Task("Default")
-    .IsDependentOn("Pack-Nuget");
+    .IsDependentOn("Pack-Nuget")
+    .IsDependentOn("Publish-Nuget");
 
 //////////////////////////////////////////////////////////////////////
 // EXECUTION
